@@ -1,0 +1,4 @@
+name = Clear Cookies
+description = "Clears User Cookies"
+core = 7.x
+files[] = clear_cookies.module

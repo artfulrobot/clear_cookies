@@ -1,0 +1,40 @@
+<?php
+
+function clear_cookies_menu() {
+  return [
+    'clear-cookies' => [
+      'title'            => 'Cookies cleared',
+      'page callback'    => 'clear_cookies_page_clear',
+      'access callback'  => TRUE,
+      'cache'            => DRUPAL_NO_CACHE,
+      'type'             => MENU_CALLBACK,
+    ],
+  ];
+}
+
+function clear_cookies_page_clear() {
+
+  global $cookie_domain;
+
+  $d = $cookie_domain;
+  if (substr($d, 0, 1) !== '.') {
+    // Ensure cookie domain starts with .
+    $d = ".$d";
+  }
+
+  $cookies_to_clear = ['cookie-agreed', '_ga', '_gid', '_gat'];
+
+  $count = 0;
+  foreach ($cookies_to_clear as $_) {
+    if (isset($_COOKIE[$_])) {
+      $count++;
+      unset($_COOKIE[$_]);
+      // Why all these are needed, I have no idea.
+      setcookie($_, '', 1, '/');
+      setcookie($_, '', 1, '/', $d);
+    }
+  }
+
+  drupal_set_message($count . (($count == 1) ? ' cookie' : ' cookies') . ' expired.' );
+  drupal_goto('<front>');
+}
